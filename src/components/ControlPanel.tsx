@@ -11,6 +11,7 @@ interface ControlPanelProps {
   onClear?: () => void;
   inputValue: string;
   onInputChange: (value: string) => void;
+  onEnterPress?: () => void;
   operations: {
     label: string;
     action: () => void;
@@ -21,9 +22,15 @@ interface ControlPanelProps {
 export const ControlPanel = ({
   inputValue,
   onInputChange,
+  onEnterPress,
   operations,
   onClear,
 }: ControlPanelProps) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && onEnterPress) {
+      onEnterPress();
+    }
+  };
   return (
     <div className="glass-card p-6 mb-8 animate-slide-in">
       <div className="flex flex-wrap gap-4 items-end">
@@ -35,7 +42,8 @@ export const ControlPanel = ({
             type="number"
             value={inputValue}
             onChange={(e) => onInputChange(e.target.value)}
-            placeholder="Enter a number"
+            onKeyDown={handleKeyDown}
+            placeholder="Enter a number (press Enter)"
             className="bg-input border-border"
           />
         </div>

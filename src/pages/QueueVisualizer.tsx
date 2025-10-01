@@ -56,6 +56,7 @@ export default function QueueVisualizer() {
         <ControlPanel
           inputValue={inputValue}
           onInputChange={setInputValue}
+          onEnterPress={handleEnqueue}
           operations={operations}
           onClear={handleClear}
         />

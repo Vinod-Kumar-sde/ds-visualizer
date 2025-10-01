@@ -56,6 +56,7 @@ export default function StackVisualizer() {
         <ControlPanel
           inputValue={inputValue}
           onInputChange={setInputValue}
+          onEnterPress={handlePush}
           operations={operations}
           onClear={handleClear}
         />

@@ -109,6 +109,7 @@ export default function TreeVisualizer() {
         <ControlPanel
           inputValue={inputValue}
           onInputChange={setInputValue}
+          onEnterPress={handleInsert}
           operations={operations}
           onClear={handleClear}
         />

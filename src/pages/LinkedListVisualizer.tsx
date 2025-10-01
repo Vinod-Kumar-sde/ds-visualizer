@@ -68,6 +68,7 @@ export default function LinkedListVisualizer() {
         <ControlPanel
           inputValue={inputValue}
           onInputChange={setInputValue}
+          onEnterPress={handleInsert}
           operations={operations}
           onClear={handleClear}
         />
