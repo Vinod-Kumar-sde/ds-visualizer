@@ -13,9 +13,6 @@ export const Navigation = () => {
   return (
     <nav className="glass-card p-6 mb-8 animate-fade-in">
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl font-bold gradient-text mb-6">
-          Data Structure Visualizer
-        </h1>
         <div className="flex flex-wrap gap-3">
           {navItems.map((item) => (
             <NavLink

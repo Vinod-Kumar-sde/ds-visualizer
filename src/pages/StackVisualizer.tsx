@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Header } from "@/components/Header";
 import { Navigation } from "@/components/Navigation";
 import { ControlPanel } from "@/components/ControlPanel";
 import { toast } from "sonner";
@@ -49,8 +50,10 @@ export default function StackVisualizer() {
   ];
 
   return (
-    <div className="min-h-screen p-8">
-      <Navigation />
+    <div className="min-h-screen">
+      <Header />
+      <div className="p-8">
+        <Navigation />
       
       <div className="max-w-6xl mx-auto">
         <ControlPanel
@@ -90,6 +93,7 @@ export default function StackVisualizer() {
             )}
           </div>
         </div>
+      </div>
       </div>
     </div>
   );
