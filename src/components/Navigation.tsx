@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { Database, Layers, List, GitBranch, Binary } from "lucide-react";
+import { motion } from "framer-motion";
 
 const navItems = [
   { path: "/", label: "Array", icon: Database },
@@ -14,7 +15,7 @@ export const Navigation = () => {
     <nav className="glass-card p-6 mb-8 animate-fade-in">
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-wrap gap-3">
-          {navItems.map((item) => (
+          {navItems.map((item, index) => (
             <NavLink
               key={item.path}
               to={item.path}
@@ -26,8 +27,19 @@ export const Navigation = () => {
                 }`
               }
             >
-              <item.icon className="w-4 h-4" />
-              {item.label}
+              {({ isActive }) => (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                  className="flex items-center gap-2"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <item.icon className="w-4 h-4" />
+                  {item.label}
+                </motion.div>
+              )}
             </NavLink>
           ))}
         </div>

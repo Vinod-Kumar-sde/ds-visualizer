@@ -10,49 +10,33 @@ All colors MUST be HSL.
   :root {
     --background: 250 60% 5%;
     --foreground: 210 40% 98%;
-
     --card: 250 50% 8%;
     --card-foreground: 210 40% 98%;
-
     --popover: 250 50% 8%;
     --popover-foreground: 210 40% 98%;
-
     --primary: 280 100% 70%;
     --primary-foreground: 0 0% 100%;
-
     --secondary: 250 40% 15%;
     --secondary-foreground: 210 40% 98%;
-
     --muted: 250 30% 20%;
     --muted-foreground: 215 20% 65%;
-
     --accent: 180 100% 50%;
     --accent-foreground: 250 60% 5%;
-
     --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
-
     --border: 250 30% 20%;
     --input: 250 30% 15%;
     --ring: 280 100% 70%;
-
     --radius: 0.75rem;
-
-    /* Gradient colors */
     --gradient-start: 280 100% 70%;
     --gradient-mid: 260 100% 60%;
     --gradient-end: 180 100% 50%;
-    
-    /* Glass effect */
     --glass-bg: 250 50% 8%;
     --glass-border: 250 30% 25%;
-    
-    /* Node colors for visualization */
     --node-default: 250 40% 25%;
     --node-active: 280 100% 70%;
     --node-success: 142 76% 36%;
     --node-error: 0 84% 60%;
-    
     --sidebar-background: 250 50% 8%;
     --sidebar-foreground: 210 40% 98%;
     --sidebar-primary: 280 100% 70%;
@@ -61,6 +45,93 @@ All colors MUST be HSL.
     --sidebar-accent-foreground: 210 40% 98%;
     --sidebar-border: 250 30% 20%;
     --sidebar-ring: 280 100% 70%;
+  }
+
+  .light {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 280 90% 50%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 180 80% 45%;
+    --accent-foreground: 240 5.9% 10%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 280 90% 50%;
+    --gradient-start: 280 90% 50%;
+    --gradient-mid: 260 90% 60%;
+    --gradient-end: 180 80% 45%;
+    --glass-bg: 0 0% 100%;
+    --glass-border: 240 5.9% 85%;
+  }
+
+  /* Ocean Palette */
+  :root[data-palette="ocean"] {
+    --primary: 200 100% 50%;
+    --gradient-start: 200 100% 50%;
+    --gradient-end: 240 100% 60%;
+    --accent: 190 100% 45%;
+  }
+
+  .light[data-palette="ocean"] {
+    --primary: 200 90% 45%;
+    --gradient-start: 200 90% 45%;
+    --gradient-end: 240 90% 55%;
+    --accent: 190 85% 40%;
+  }
+
+  /* Forest Palette */
+  :root[data-palette="forest"] {
+    --primary: 142 76% 45%;
+    --gradient-start: 142 76% 45%;
+    --gradient-end: 120 60% 50%;
+    --accent: 80 60% 50%;
+  }
+
+  .light[data-palette="forest"] {
+    --primary: 142 71% 40%;
+    --gradient-start: 142 71% 40%;
+    --gradient-end: 120 55% 45%;
+    --accent: 80 55% 45%;
+  }
+
+  /* Sunset Palette */
+  :root[data-palette="sunset"] {
+    --primary: 25 95% 55%;
+    --gradient-start: 25 95% 55%;
+    --gradient-end: 340 90% 60%;
+    --accent: 10 90% 60%;
+  }
+
+  .light[data-palette="sunset"] {
+    --primary: 25 90% 50%;
+    --gradient-start: 25 90% 50%;
+    --gradient-end: 340 85% 55%;
+    --accent: 10 85% 55%;
+  }
+
+  /* Purple Palette */
+  :root[data-palette="purple"] {
+    --primary: 270 100% 65%;
+    --gradient-start: 270 100% 65%;
+    --gradient-end: 290 100% 60%;
+    --accent: 300 80% 60%;
+  }
+
+  .light[data-palette="purple"] {
+    --primary: 270 95% 55%;
+    --gradient-start: 270 95% 55%;
+    --gradient-end: 290 95% 55%;
+    --accent: 300 75% 50%;
   }
 }
 
@@ -71,8 +142,17 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
-    background: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(250 70% 8%) 100%);
+    background: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(var(--background)) 100%);
     min-height: 100vh;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  .dark body {
+    background: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(250 70% 8%) 100%);
+  }
+  
+  .light body {
+    background: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(240 10% 95%) 100%);
   }
 }
 
@@ -140,5 +220,31 @@ All colors MUST be HSL.
       transform: scale(1);
       opacity: 1;
     }
+  }
+  
+  @keyframes pulse-glow {
+    0%, 100% {
+      box-shadow: 0 0 20px hsl(var(--primary) / 0.3);
+    }
+    50% {
+      box-shadow: 0 0 40px hsl(var(--primary) / 0.6);
+    }
+  }
+  
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+  
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+  
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
   }
 }

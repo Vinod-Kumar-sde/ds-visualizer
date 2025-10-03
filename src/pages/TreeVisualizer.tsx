@@ -2,7 +2,10 @@ import { useState } from "react";
 import { Header } from "@/components/Header";
 import { Navigation } from "@/components/Navigation";
 import { ControlPanel } from "@/components/ControlPanel";
+import { StatsPanel } from "@/components/StatsPanel";
+import { useGamification } from "@/contexts/GamificationContext";
 import { toast } from "sonner";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface TreeNode {
   value: number;
@@ -31,6 +34,7 @@ export default function TreeVisualizer() {
   const [inputValue, setInputValue] = useState("");
   const [nextId, setNextId] = useState(7);
   const [animatingId, setAnimatingId] = useState<number | null>(null);
+  const { recordOperation } = useGamification();
 
   const insertNode = (node: TreeNode | null, value: number, id: number): TreeNode => {
     if (!node) {
@@ -56,6 +60,7 @@ export default function TreeVisualizer() {
     setNextId(nextId + 1);
     setTimeout(() => setAnimatingId(null), 500);
     setInputValue("");
+    recordOperation("tree insert");
     toast.success(`Inserted ${value}`);
   };
 
@@ -71,19 +76,27 @@ export default function TreeVisualizer() {
 
     return (
       <div className="flex flex-col items-center gap-4">
-        <div
-          className={`w-16 h-16 flex items-center justify-center rounded-full font-bold text-lg bg-primary/20 border-2 border-primary text-primary transition-all duration-300 ${
-            animatingId === node.id ? "animate-pop glow-effect scale-125" : ""
+        <motion.div
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ type: "spring", stiffness: 300, damping: 20 }}
+          whileHover={{ scale: 1.15, rotate: 5 }}
+          className={`w-16 h-16 flex items-center justify-center rounded-full font-bold text-lg bg-primary/20 border-2 border-primary text-primary ${
+            animatingId === node.id ? "glow-effect animate-pulse-glow" : ""
           }`}
         >
           {node.value}
-        </div>
+        </motion.div>
         {(node.left || node.right) && (
           <div className="flex gap-8">
             <div className="flex flex-col items-center">
               {node.left && (
                 <>
-                  <div className="w-px h-8 bg-accent"></div>
+                  <motion.div
+                    initial={{ scaleY: 0 }}
+                    animate={{ scaleY: 1 }}
+                    className="w-px h-8 bg-accent origin-top"
+                  />
                   {renderNode(node.left, level + 1)}
                 </>
               )}
@@ -91,7 +104,11 @@ export default function TreeVisualizer() {
             <div className="flex flex-col items-center">
               {node.right && (
                 <>
-                  <div className="w-px h-8 bg-accent"></div>
+                  <motion.div
+                    initial={{ scaleY: 0 }}
+                    animate={{ scaleY: 1 }}
+                    className="w-px h-8 bg-accent origin-top"
+                  />
                   {renderNode(node.right, level + 1)}
                 </>
               )}
@@ -107,30 +124,38 @@ export default function TreeVisualizer() {
       <Header />
       <div className="p-8">
         <Navigation />
-      
-      <div className="max-w-6xl mx-auto">
-        <ControlPanel
-          inputValue={inputValue}
-          onInputChange={setInputValue}
-          onEnterPress={handleInsert}
-          operations={operations}
-          onClear={handleClear}
-        />
+        <div className="max-w-6xl mx-auto">
+          <StatsPanel />
+          <ControlPanel
+            inputValue={inputValue}
+            onInputChange={setInputValue}
+            onEnterPress={handleInsert}
+            operations={operations}
+            onClear={handleClear}
+          />
 
-        <div className="glass-card p-8">
-          <h2 className="text-2xl font-bold mb-6 text-center">Binary Search Tree Visualization</h2>
-          
-          <div className="flex justify-center items-start min-h-[400px] overflow-x-auto py-8">
-            {root ? (
-              renderNode(root)
-            ) : (
-              <div className="text-center text-muted-foreground">
-                Tree is empty. Insert some values!
-              </div>
-            )}
-          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="glass-card p-8"
+          >
+            <h2 className="text-2xl font-bold mb-6 text-center">Binary Search Tree Visualization</h2>
+            
+            <div className="flex justify-center items-start min-h-[400px] overflow-x-auto py-8">
+              {root ? (
+                renderNode(root)
+              ) : (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="text-center text-muted-foreground"
+                >
+                  Tree is empty. Insert some values!
+                </motion.div>
+              )}
+            </div>
+          </motion.div>
         </div>
-      </div>
       </div>
     </div>
   );
