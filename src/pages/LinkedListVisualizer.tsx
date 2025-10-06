@@ -3,8 +3,9 @@ import { Header } from "@/components/Header";
 import { Navigation } from "@/components/Navigation";
 import { ControlPanel } from "@/components/ControlPanel";
 import { toast } from "sonner";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ArrowLeft } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@/components/ui/button";
 
 interface ListNode {
   value: number;
@@ -20,6 +21,7 @@ export default function LinkedListVisualizer() {
   const [inputValue, setInputValue] = useState("");
   const [nextId, setNextId] = useState(3);
   const [animatingId, setAnimatingId] = useState<number | null>(null);
+  const [isDoublyLinked, setIsDoublyLinked] = useState(false);
 
   const handleInsert = () => {
     const value = parseInt(inputValue);
@@ -57,6 +59,11 @@ export default function LinkedListVisualizer() {
     toast.success("List cleared");
   };
 
+  const toggleListType = () => {
+    setIsDoublyLinked(!isDoublyLinked);
+    toast.success(`Switched to ${!isDoublyLinked ? "Doubly" : "Singly"} Linked List`);
+  };
+
   const operations = [
     { label: "Insert", action: handleInsert },
     { label: "Delete Last", action: handleDelete, variant: "destructive" as const },
@@ -81,9 +88,16 @@ export default function LinkedListVisualizer() {
             animate={{ opacity: 1, y: 0 }}
             className="glass-card p-8"
           >
-            <h2 className="text-2xl font-bold mb-6 text-center">Linked List Visualization</h2>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold">
+                {isDoublyLinked ? "Doubly" : "Singly"} Linked List Visualization
+              </h2>
+              <Button onClick={toggleListType} variant="outline">
+                Switch to {isDoublyLinked ? "Singly" : "Doubly"} Linked List
+              </Button>
+            </div>
 
-            <div className="flex items-center justify-center gap-4 min-h-[200px] overflow-x-auto py-8">
+            <div className="flex items-center justify-center gap-4 min-h-[300px] overflow-x-auto py-8">
               {list.length === 0 ? (
                 <motion.div
                   initial={{ opacity: 0 }}
@@ -93,37 +107,115 @@ export default function LinkedListVisualizer() {
                   List is empty. Insert some values!
                 </motion.div>
               ) : (
-                <AnimatePresence mode="popLayout">
-                  {list.map((node, index) => (
-                    <motion.div
-                      key={node.id}
-                      initial={{ opacity: 0, x: -50, scale: 0.5 }}
-                      animate={{ opacity: 1, x: 0, scale: 1 }}
-                      exit={{ opacity: 0, x: 50, scale: 0.5 }}
-                      transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                      className="flex items-center gap-4"
-                    >
+                <div className="flex items-center gap-2">
+                  <div className="text-sm text-muted-foreground font-mono">HEAD</div>
+                  <AnimatePresence mode="popLayout">
+                    {list.map((node, index) => (
                       <motion.div
-                        whileHover={{ scale: 1.1, rotate: 5 }}
-                        className={`flex items-center gap-4 ${
-                          animatingId === node.id ? "glow-effect animate-pulse-glow" : ""
-                        }`}
+                        key={node.id}
+                        initial={{ opacity: 0, x: -50, scale: 0.5 }}
+                        animate={{ opacity: 1, x: 0, scale: 1 }}
+                        exit={{ opacity: 0, x: 50, scale: 0.5 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                        className="flex items-center gap-2"
                       >
-                        <div className="w-20 h-20 flex items-center justify-center rounded-lg font-bold text-xl bg-primary/20 border-2 border-primary text-primary">
-                          {node.value}
-                        </div>
+                        {/* Previous arrow for doubly linked list */}
+                        {isDoublyLinked && index > 0 && (
+                          <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="flex flex-col items-center"
+                          >
+                            <motion.div
+                              animate={{ x: [-3, 0, -3] }}
+                              transition={{ repeat: Infinity, duration: 2 }}
+                            >
+                              <ArrowLeft className="text-secondary-foreground/40 w-6 h-6" />
+                            </motion.div>
+                            <span className="text-[10px] text-muted-foreground">prev</span>
+                          </motion.div>
+                        )}
+
+                        {/* Node structure */}
+                        <motion.div
+                          whileHover={{ scale: 1.05 }}
+                          className={`${
+                            animatingId === node.id ? "glow-effect animate-pulse-glow" : ""
+                          }`}
+                        >
+                          <div className="flex items-stretch border-2 border-primary rounded-lg overflow-hidden bg-card">
+                            {/* Previous pointer section (for doubly linked) */}
+                            {isDoublyLinked && (
+                              <div className="w-16 bg-secondary/20 border-r-2 border-primary flex flex-col items-center justify-center p-2">
+                                <div className="text-[10px] text-muted-foreground mb-1">prev</div>
+                                <div className="text-xs font-mono text-accent">
+                                  {index === 0 ? "null" : `0x${(node.id - 1).toString(16).padStart(3, '0')}`}
+                                </div>
+                              </div>
+                            )}
+                            
+                            {/* Data section */}
+                            <div className="w-20 h-20 bg-primary/20 flex items-center justify-center">
+                              <span className="font-bold text-xl text-primary">{node.value}</span>
+                            </div>
+                            
+                            {/* Next pointer section */}
+                            <div className="w-16 bg-secondary/20 border-l-2 border-primary flex flex-col items-center justify-center p-2">
+                              <div className="text-[10px] text-muted-foreground mb-1">next</div>
+                              <div className="text-xs font-mono text-accent">
+                                {index === list.length - 1 ? "null" : `0x${list[index + 1].id.toString(16).padStart(3, '0')}`}
+                              </div>
+                            </div>
+                          </div>
+                          
+                          {/* Memory address label */}
+                          <div className="text-center mt-1">
+                            <span className="text-[10px] text-muted-foreground font-mono">
+                              @0x{node.id.toString(16).padStart(3, '0')}
+                            </span>
+                          </div>
+                        </motion.div>
+
+                        {/* Next arrow */}
                         {index < list.length - 1 && (
                           <motion.div
-                            animate={{ x: [0, 5, 0] }}
-                            transition={{ repeat: Infinity, duration: 1.5 }}
+                            className="flex flex-col items-center"
                           >
-                            <ArrowRight className="text-accent w-8 h-8" />
+                            <motion.div
+                              animate={{ x: [0, 5, 0] }}
+                              transition={{ repeat: Infinity, duration: 1.5 }}
+                            >
+                              <ArrowRight className="text-accent w-6 h-6" />
+                            </motion.div>
+                            <span className="text-[10px] text-muted-foreground">next</span>
+                          </motion.div>
+                        )}
+
+                        {/* Backward arrow for doubly linked list */}
+                        {isDoublyLinked && index < list.length - 1 && (
+                          <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="flex flex-col items-center -ml-2"
+                          >
+                            <motion.div
+                              animate={{ x: [3, 0, 3] }}
+                              transition={{ repeat: Infinity, duration: 2, delay: 1 }}
+                            >
+                              <ArrowLeft className="text-secondary-foreground/40 w-6 h-6" />
+                            </motion.div>
+                            <span className="text-[10px] text-muted-foreground">prev</span>
                           </motion.div>
                         )}
                       </motion.div>
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
+                    ))}
+                  </AnimatePresence>
+                  {list.length > 0 && (
+                    <div className="text-sm text-muted-foreground font-mono ml-2">
+                      → null
+                    </div>
+                  )}
+                </div>
               )}
             </div>
           </motion.div>
