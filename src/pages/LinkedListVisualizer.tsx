@@ -2,8 +2,6 @@ import { useState } from "react";
 import { Header } from "@/components/Header";
 import { Navigation } from "@/components/Navigation";
 import { ControlPanel } from "@/components/ControlPanel";
-import { StatsPanel } from "@/components/StatsPanel";
-import { useGamification } from "@/contexts/GamificationContext";
 import { toast } from "sonner";
 import { ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -22,7 +20,6 @@ export default function LinkedListVisualizer() {
   const [inputValue, setInputValue] = useState("");
   const [nextId, setNextId] = useState(3);
   const [animatingId, setAnimatingId] = useState<number | null>(null);
-  const { recordOperation } = useGamification();
 
   const handleInsert = () => {
     const value = parseInt(inputValue);
@@ -37,7 +34,6 @@ export default function LinkedListVisualizer() {
     setNextId(nextId + 1);
     setTimeout(() => setAnimatingId(null), 500);
     setInputValue("");
-    recordOperation("linked list insert");
     toast.success(`Inserted ${value}`);
   };
 
@@ -52,7 +48,6 @@ export default function LinkedListVisualizer() {
     setTimeout(() => {
       setList(list.slice(0, -1));
       setAnimatingId(null);
-      recordOperation("linked list delete");
       toast.success(`Deleted ${lastNode.value}`);
     }, 300);
   };
@@ -73,7 +68,6 @@ export default function LinkedListVisualizer() {
       <div className="p-8">
         <Navigation />
         <div className="max-w-6xl mx-auto">
-          <StatsPanel />
           <ControlPanel
             inputValue={inputValue}
             onInputChange={setInputValue}

@@ -2,10 +2,8 @@ import { useState } from "react";
 import { Header } from "@/components/Header";
 import { Navigation } from "@/components/Navigation";
 import { ControlPanel } from "@/components/ControlPanel";
-import { StatsPanel } from "@/components/StatsPanel";
-import { useGamification } from "@/contexts/GamificationContext";
 import { toast } from "sonner";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 interface TreeNode {
   value: number;
@@ -34,7 +32,6 @@ export default function TreeVisualizer() {
   const [inputValue, setInputValue] = useState("");
   const [nextId, setNextId] = useState(7);
   const [animatingId, setAnimatingId] = useState<number | null>(null);
-  const { recordOperation } = useGamification();
 
   const insertNode = (node: TreeNode | null, value: number, id: number): TreeNode => {
     if (!node) {
@@ -60,7 +57,6 @@ export default function TreeVisualizer() {
     setNextId(nextId + 1);
     setTimeout(() => setAnimatingId(null), 500);
     setInputValue("");
-    recordOperation("tree insert");
     toast.success(`Inserted ${value}`);
   };
 
@@ -125,7 +121,6 @@ export default function TreeVisualizer() {
       <div className="p-8">
         <Navigation />
         <div className="max-w-6xl mx-auto">
-          <StatsPanel />
           <ControlPanel
             inputValue={inputValue}
             onInputChange={setInputValue}

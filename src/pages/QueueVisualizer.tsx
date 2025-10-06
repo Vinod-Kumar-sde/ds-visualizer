@@ -2,8 +2,6 @@ import { useState } from "react";
 import { Header } from "@/components/Header";
 import { Navigation } from "@/components/Navigation";
 import { ControlPanel } from "@/components/ControlPanel";
-import { StatsPanel } from "@/components/StatsPanel";
-import { useGamification } from "@/contexts/GamificationContext";
 import { toast } from "sonner";
 import { ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -12,7 +10,6 @@ export default function QueueVisualizer() {
   const [queue, setQueue] = useState<number[]>([5, 10, 15, 20]);
   const [inputValue, setInputValue] = useState("");
   const [animatingIndex, setAnimatingIndex] = useState<number | null>(null);
-  const { recordOperation } = useGamification();
 
   const handleEnqueue = () => {
     const value = parseInt(inputValue);
@@ -25,7 +22,6 @@ export default function QueueVisualizer() {
     setAnimatingIndex(queue.length);
     setTimeout(() => setAnimatingIndex(null), 500);
     setInputValue("");
-    recordOperation("enqueue");
     toast.success(`Enqueued ${value}`);
   };
 
@@ -40,7 +36,6 @@ export default function QueueVisualizer() {
     setTimeout(() => {
       setQueue(queue.slice(1));
       setAnimatingIndex(null);
-      recordOperation("dequeue");
       toast.success(`Dequeued ${frontValue}`);
     }, 300);
   };
@@ -61,7 +56,6 @@ export default function QueueVisualizer() {
       <div className="p-8">
         <Navigation />
         <div className="max-w-6xl mx-auto">
-          <StatsPanel />
           <ControlPanel
             inputValue={inputValue}
             onInputChange={setInputValue}

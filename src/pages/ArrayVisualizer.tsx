@@ -2,8 +2,6 @@ import { useState } from "react";
 import { Header } from "@/components/Header";
 import { Navigation } from "@/components/Navigation";
 import { ControlPanel } from "@/components/ControlPanel";
-import { StatsPanel } from "@/components/StatsPanel";
-import { useGamification } from "@/contexts/GamificationContext";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -11,7 +9,6 @@ export default function ArrayVisualizer() {
   const [array, setArray] = useState<number[]>([5, 12, 8, 23, 15]);
   const [inputValue, setInputValue] = useState("");
   const [animatingIndex, setAnimatingIndex] = useState<number | null>(null);
-  const { recordOperation } = useGamification();
 
   const handleInsert = () => {
     const value = parseInt(inputValue);
@@ -24,7 +21,6 @@ export default function ArrayVisualizer() {
     setAnimatingIndex(array.length);
     setTimeout(() => setAnimatingIndex(null), 500);
     setInputValue("");
-    recordOperation("insert");
     toast.success(`Inserted ${value}`);
   };
 
@@ -39,7 +35,6 @@ export default function ArrayVisualizer() {
     setTimeout(() => {
       setArray(array.slice(0, -1));
       setAnimatingIndex(null);
-      recordOperation("delete");
       toast.success(`Deleted ${lastValue}`);
     }, 300);
   };
@@ -60,7 +55,6 @@ export default function ArrayVisualizer() {
       <div className="p-8">
         <Navigation />
         <div className="max-w-6xl mx-auto">
-          <StatsPanel />
           <ControlPanel
             inputValue={inputValue}
             onInputChange={setInputValue}

@@ -2,8 +2,6 @@ import { useState } from "react";
 import { Header } from "@/components/Header";
 import { Navigation } from "@/components/Navigation";
 import { ControlPanel } from "@/components/ControlPanel";
-import { StatsPanel } from "@/components/StatsPanel";
-import { useGamification } from "@/contexts/GamificationContext";
 import { toast } from "sonner";
 import { ArrowDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -12,7 +10,6 @@ export default function StackVisualizer() {
   const [stack, setStack] = useState<number[]>([10, 20, 30]);
   const [inputValue, setInputValue] = useState("");
   const [animatingIndex, setAnimatingIndex] = useState<number | null>(null);
-  const { recordOperation } = useGamification();
 
   const handlePush = () => {
     const value = parseInt(inputValue);
@@ -25,7 +22,6 @@ export default function StackVisualizer() {
     setAnimatingIndex(stack.length);
     setTimeout(() => setAnimatingIndex(null), 500);
     setInputValue("");
-    recordOperation("push");
     toast.success(`Pushed ${value}`);
   };
 
@@ -40,7 +36,6 @@ export default function StackVisualizer() {
     setTimeout(() => {
       setStack(stack.slice(0, -1));
       setAnimatingIndex(null);
-      recordOperation("pop");
       toast.success(`Popped ${topValue}`);
     }, 300);
   };
@@ -61,7 +56,6 @@ export default function StackVisualizer() {
       <div className="p-8">
         <Navigation />
         <div className="max-w-6xl mx-auto">
-          <StatsPanel />
           <ControlPanel
             inputValue={inputValue}
             onInputChange={setInputValue}
