@@ -9,6 +9,7 @@ import QueueVisualizer from "./pages/QueueVisualizer";
 import LinkedListVisualizer from "./pages/LinkedListVisualizer";
 import TreeVisualizer from "./pages/TreeVisualizer";
 import NotFound from "./pages/NotFound";
+import ChatBot from "./components/ChatBot";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +26,7 @@ const App = () => (
         <Route path="/tree" element={<TreeVisualizer />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
+      <ChatBot />
     </TooltipProvider>
   </QueryClientProvider>
 );
