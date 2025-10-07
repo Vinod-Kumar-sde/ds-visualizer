@@ -79,7 +79,7 @@ export default function ArrayVisualizer() {
                 Array is empty. Insert some values!
               </motion.div>
             ) : (
-              <div className="flex flex-wrap gap-4 justify-center items-end min-h-[200px]">
+              <div className="flex flex-wrap gap-6 justify-center items-end min-h-[200px] p-4">
                 <AnimatePresence mode="popLayout">
                   {array.map((value, index) => (
                     <motion.div
@@ -88,8 +88,7 @@ export default function ArrayVisualizer() {
                       animate={{ opacity: 1, scale: 1, y: 0 }}
                       exit={{ opacity: 0, scale: 0.5, y: 50 }}
                       transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                      className="flex flex-col items-center"
-                      whileHover={{ scale: 1.1 }}
+                      className="flex flex-col items-center flex-shrink-0"
                     >
                       <motion.div
                         className={`w-20 flex items-center justify-center rounded-lg font-bold text-xl bg-primary/20 border-2 border-primary text-primary ${
@@ -100,8 +99,7 @@ export default function ArrayVisualizer() {
                           minHeight: "60px",
                         }}
                         animate={animatingIndex === index ? {
-                          scale: [1, 1.2, 1],
-                          rotate: [0, 5, -5, 0],
+                          scale: [1, 1.15, 1],
                         } : {}}
                         transition={{ duration: 0.5 }}
                       >
