@@ -1,4 +1,4 @@
-# 🧠 DS Visualizer
+# 🧠 DS Visualizer (VisuStruct)
 
 An interactive **Data Structure Visualizer** built with **React**, **TypeScript**, and **shadcn/ui**, designed to help students and developers understand core data structures through real-time visualization and animations.
 
