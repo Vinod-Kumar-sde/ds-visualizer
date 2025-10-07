@@ -97,7 +97,7 @@ export default function LinkedListVisualizer() {
               </Button>
             </div>
 
-            <div className="flex items-center justify-center gap-4 min-h-[300px] overflow-x-auto py-8">
+            <div className="flex items-start justify-start gap-4 min-h-[300px] overflow-x-auto py-8 px-4">
               {list.length === 0 ? (
                 <motion.div
                   initial={{ opacity: 0 }}
@@ -119,23 +119,6 @@ export default function LinkedListVisualizer() {
                         transition={{ type: "spring", stiffness: 300, damping: 25 }}
                         className="flex items-center gap-2"
                       >
-                        {/* Previous arrow for doubly linked list */}
-                        {isDoublyLinked && index > 0 && (
-                          <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            className="flex flex-col items-center"
-                          >
-                            <motion.div
-                              animate={{ x: [-3, 0, -3] }}
-                              transition={{ repeat: Infinity, duration: 2 }}
-                            >
-                              <ArrowLeft className="text-secondary-foreground/40 w-6 h-6" />
-                            </motion.div>
-                            <span className="text-[10px] text-muted-foreground">prev</span>
-                          </motion.div>
-                        )}
-
                         {/* Node structure */}
                         <motion.div
                           whileHover={{ scale: 1.05 }}
@@ -179,7 +162,7 @@ export default function LinkedListVisualizer() {
                         {/* Next arrow */}
                         {index < list.length - 1 && (
                           <motion.div
-                            className="flex flex-col items-center"
+                            className="flex flex-col items-center gap-1"
                           >
                             <motion.div
                               animate={{ x: [0, 5, 0] }}
@@ -188,23 +171,17 @@ export default function LinkedListVisualizer() {
                               <ArrowRight className="text-accent w-6 h-6" />
                             </motion.div>
                             <span className="text-[10px] text-muted-foreground">next</span>
-                          </motion.div>
-                        )}
-
-                        {/* Backward arrow for doubly linked list */}
-                        {isDoublyLinked && index < list.length - 1 && (
-                          <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            className="flex flex-col items-center -ml-2"
-                          >
-                            <motion.div
-                              animate={{ x: [3, 0, 3] }}
-                              transition={{ repeat: Infinity, duration: 2, delay: 1 }}
-                            >
-                              <ArrowLeft className="text-secondary-foreground/40 w-6 h-6" />
-                            </motion.div>
-                            <span className="text-[10px] text-muted-foreground">prev</span>
+                            {isDoublyLinked && (
+                              <>
+                                <motion.div
+                                  animate={{ x: [3, 0, 3] }}
+                                  transition={{ repeat: Infinity, duration: 2, delay: 1 }}
+                                >
+                                  <ArrowLeft className="text-secondary-foreground/40 w-6 h-6" />
+                                </motion.div>
+                                <span className="text-[10px] text-muted-foreground">prev</span>
+                              </>
+                            )}
                           </motion.div>
                         )}
                       </motion.div>
