@@ -25,7 +25,12 @@ export default function ChatBot() {
   useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
-      setMessages(JSON.parse(stored));
+      const parsedMessages = JSON.parse(stored);
+      // Filter out error messages (those starting with ⚠️ or ❌)
+      const cleanMessages = parsedMessages.filter(
+        (msg: Message) => !msg.content.startsWith("⚠️") && !msg.content.startsWith("❌")
+      );
+      setMessages(cleanMessages);
     } else {
       setMessages([{
         role: "assistant",
