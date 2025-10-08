@@ -11,7 +11,7 @@ interface Message {
   timestamp: number;
 }
 
-const HUGGINGFACE_API = "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.1";
+const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
 const STORAGE_KEY = "chatbot-messages";
 
 export default function ChatBot() {
@@ -79,36 +79,120 @@ export default function ChatBot() {
     setIsTyping(true);
 
     try {
-      const response = await fetch(HUGGINGFACE_API, {
+      const response = await fetch(CHAT_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
         body: JSON.stringify({
-          inputs: `<s>[INST] You are a helpful assistant specializing in Data Structures and Algorithms. Answer concisely and clearly. User: ${userMessage.content} [/INST]`,
-          parameters: {
-            max_new_tokens: 250,
-            temperature: 0.7,
-            top_p: 0.95,
-            return_full_text: false
-          }
-        })
+          messages: [...messages, userMessage].map(m => ({ 
+            role: m.role, 
+            content: m.content 
+          }))
+        }),
       });
 
       if (!response.ok) {
-        throw new Error("API request failed");
+        const errorData = await response.json().catch(() => ({}));
+        if (response.status === 429) {
+          throw new Error("Rate limit exceeded. Please try again in a moment.");
+        }
+        if (response.status === 402) {
+          throw new Error("Credits depleted. Please add credits to continue.");
+        }
+        throw new Error(errorData.error || "Failed to get response");
       }
 
-      const data = await response.json();
-      const botReply = data[0]?.generated_text || "I couldn't generate a response. Please try again.";
+      if (!response.body) {
+        throw new Error("No response body");
+      }
 
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let textBuffer = "";
+      let streamDone = false;
+      let assistantContent = "";
+
+      // Add initial empty assistant message
       setMessages(prev => [...prev, {
         role: "assistant",
-        content: botReply.trim(),
+        content: "",
         timestamp: Date.now()
       }]);
+
+      while (!streamDone) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        
+        textBuffer += decoder.decode(value, { stream: true });
+
+        let newlineIndex: number;
+        while ((newlineIndex = textBuffer.indexOf("\n")) !== -1) {
+          let line = textBuffer.slice(0, newlineIndex);
+          textBuffer = textBuffer.slice(newlineIndex + 1);
+
+          if (line.endsWith("\r")) line = line.slice(0, -1);
+          if (line.startsWith(":") || line.trim() === "") continue;
+          if (!line.startsWith("data: ")) continue;
+
+          const jsonStr = line.slice(6).trim();
+          if (jsonStr === "[DONE]") {
+            streamDone = true;
+            break;
+          }
+
+          try {
+            const parsed = JSON.parse(jsonStr);
+            const content = parsed.choices?.[0]?.delta?.content as string | undefined;
+            if (content) {
+              assistantContent += content;
+              setMessages(prev => {
+                const newMessages = [...prev];
+                const lastMessage = newMessages[newMessages.length - 1];
+                if (lastMessage?.role === "assistant") {
+                  lastMessage.content = assistantContent;
+                }
+                return newMessages;
+              });
+            }
+          } catch {
+            textBuffer = line + "\n" + textBuffer;
+            break;
+          }
+        }
+      }
+
+      // Final flush
+      if (textBuffer.trim()) {
+        for (let raw of textBuffer.split("\n")) {
+          if (!raw || raw.startsWith(":") || raw.trim() === "") continue;
+          if (!raw.startsWith("data: ")) continue;
+          const jsonStr = raw.slice(6).trim();
+          if (jsonStr === "[DONE]") continue;
+          try {
+            const parsed = JSON.parse(jsonStr);
+            const content = parsed.choices?.[0]?.delta?.content as string | undefined;
+            if (content) {
+              assistantContent += content;
+              setMessages(prev => {
+                const newMessages = [...prev];
+                const lastMessage = newMessages[newMessages.length - 1];
+                if (lastMessage?.role === "assistant") {
+                  lastMessage.content = assistantContent;
+                }
+                return newMessages;
+              });
+            }
+          } catch { /* ignore */ }
+        }
+      }
+
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
       setMessages(prev => [...prev, {
         role: "assistant",
-        content: "⚠️ I'm having trouble connecting. The model might be loading. Please try again in a moment.",
+        content: `⚠️ ${errorMessage}`,
         timestamp: Date.now()
       }]);
     } finally {
