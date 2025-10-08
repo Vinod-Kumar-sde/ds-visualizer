@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { MessageCircle, X, Send } from "lucide-react";
+import { MessageCircle, X, Send, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -12,7 +12,6 @@ interface Message {
 }
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
-const STORAGE_KEY = "chatbot-messages";
 
 export default function ChatBot() {
   const [isOpen, setIsOpen] = useState(false);
@@ -23,21 +22,11 @@ export default function ChatBot() {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      const parsedMessages = JSON.parse(stored);
-      // Filter out error messages (those starting with ⚠️ or ❌)
-      const cleanMessages = parsedMessages.filter(
-        (msg: Message) => !msg.content.startsWith("⚠️") && !msg.content.startsWith("❌")
-      );
-      setMessages(cleanMessages);
-    } else {
-      setMessages([{
-        role: "assistant",
-        content: "👋 Hi! I'm your DSA Assistant. Ask me about arrays, stacks, queues, trees, or algorithms.",
-        timestamp: Date.now()
-      }]);
-    }
+    setMessages([{
+      role: "assistant",
+      content: "👋 Hi! I'm your DSA Assistant. Ask me about arrays, stacks, queues, trees, or algorithms.",
+      timestamp: Date.now()
+    }]);
 
     const handleOnline = () => setIsOffline(false);
     const handleOffline = () => setIsOffline(true);
@@ -48,12 +37,6 @@ export default function ChatBot() {
       window.removeEventListener("offline", handleOffline);
     };
   }, []);
-
-  useEffect(() => {
-    if (messages.length > 0) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
-    }
-  }, [messages]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -205,6 +188,14 @@ export default function ChatBot() {
     }
   };
 
+  const clearChat = () => {
+    setMessages([{
+      role: "assistant",
+      content: "👋 Hi! I'm your DSA Assistant. Ask me about arrays, stacks, queues, trees, or algorithms.",
+      timestamp: Date.now()
+    }]);
+  };
+
   return (
     <>
       <AnimatePresence>
@@ -218,14 +209,25 @@ export default function ChatBot() {
           >
             <div className="flex items-center justify-between p-4 border-b border-border bg-primary/10 rounded-t-lg">
               <h3 className="font-semibold text-lg">DSA Chatbot</h3>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsOpen(false)}
-                className="h-8 w-8"
-              >
-                <X className="h-4 w-4" />
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={clearChat}
+                  className="h-8 w-8"
+                  title="Clear chat"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsOpen(false)}
+                  className="h-8 w-8"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
 
             <ScrollArea className="flex-1 p-4" ref={scrollRef}>
